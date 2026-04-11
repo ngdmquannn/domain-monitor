@@ -1,0 +1,24 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - SMTP_HOST=mailhog
+      - SMTP_PORT=1025
+      - SMTP_FROM=gsn.alert@vng.com.vn
+      - NOTIFICATION_RECIPIENTS=quanndm@vng.com.vn
+      - CRON_SCHEDULE=0 9 * * *
+    volumes:
+      - notification-data:/app/data
+    depends_on:
+      - mailhog
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"   # Web UI xem email
+      - "1025:1025"   # SMTP server
+
+volumes:
+  notification-data:
