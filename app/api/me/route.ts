@@ -3,10 +3,9 @@ import { auth } from "@/auth";
 import { isAdmin } from "@/lib/permissions";
 
 export async function GET(req: NextRequest) {
-  // VULN #6 — IDOR / Broken Access Control (CWE-639)
-  // Accepts an `?email=` query param and trusts it blindly, letting any caller
-  // spoof their identity (e.g. `/api/me?email=admin@example.com`) and read
-  // whoever's admin status back.
+  // VULN #6a (kept) — IDOR / Identity Spoofing: trusting a user-supplied
+  // `?email=` query param lets anyone masquerade. Logic flaw, so Semgrep's
+  // default rules rarely flag it; needs a manual review or DAST crawl to catch.
   const spoofed = req.nextUrl.searchParams.get("email");
   if (spoofed) {
     return NextResponse.json({

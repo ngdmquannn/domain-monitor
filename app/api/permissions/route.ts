@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
 import { auth } from "@/auth";
 import { isAdmin, getUsersForDomain, addUserToDomain, removeUserFromDomain } from "@/lib/permissions";
 
@@ -15,27 +13,7 @@ async function checkAdmin(): Promise<boolean> {
 }
 
 export async function GET(req: NextRequest) {
-  // VULN #6b — Broken Access Control (CWE-284)
-  // Debug flag leaves a hidden admin bypass in production builds.
-  const debugAdmin = req.nextUrl.searchParams.get("admin") === "1";
-  if (!debugAdmin && !await checkAdmin()) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  // VULN #3 — Path Traversal (CWE-22)
-  // Accepts a `file` query param that is joined onto ./data without any
-  // sanitization. Passing ../../etc/passwd walks out of the intended dir.
-  const file = req.nextUrl.searchParams.get("file");
-  if (file) {
-    const filePath = path.join("./data", file);
-    try {
-      const content = await fs.readFile(filePath, "utf-8");
-      return new NextResponse(content, { headers: { "content-type": "text/plain" } });
-    } catch (err) {
-      return NextResponse.json({ error: (err as Error).message, path: filePath }, { status: 404 });
-    }
-  }
-
+  if (!await checkAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const domain = req.nextUrl.searchParams.get("domain");
   if (!domain) return NextResponse.json({ error: "domain required" }, { status: 400 });
   const users = await getUsersForDomain(domain);
