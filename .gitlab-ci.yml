@@ -231,7 +231,7 @@ sign-image:
       cosign sign --key /tmp/cosign.key \
         --tlog-upload=false \
         $DOCKERHUB_IMAGE:$IMAGE_TAG_LATEST
-      echo "✅ Signed: $DOCKERHUB_IMAGE:$IMAGE_TAG_SHA"
+      echo "SIGNED $DOCKERHUB_IMAGE:$IMAGE_TAG_SHA"
   after_script:
     - rm -f /tmp/cosign.key
   rules:
