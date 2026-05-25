@@ -6,19 +6,19 @@ services:
     environment:
       - SMTP_HOST=mailhog
       - SMTP_PORT=1025
-      - SMTP_FROM=gsn.alert@vng.com.vn
-      - NOTIFICATION_RECIPIENTS=quanndm@vng.com.vn
+      - SMTP_FROM=alert@example.com
+      - NOTIFICATION_RECIPIENTS=admin@example.com
       - CRON_SCHEDULE=0 9 * * *
     volumes:
       - notification-data:/app/data
-    depends_on:
-      - mailhog
+    # depends_on:
+    #   - mailhog
 
-  mailhog:
-    image: mailhog/mailhog
-    ports:
-      - "8025:8025"   # Web UI xem email
-      - "1025:1025"   # SMTP server
+  # mailhog:
+  #   image: mailhog/mailhog
+  #   ports:
+  #     - "8025:8025"   # Web UI xem email
+  #     - "1025:1025"   # SMTP server
 
 volumes:
   notification-data:

@@ -73,7 +73,7 @@ export default function UserManageModal({ domain, onClose }: Props) {
           <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
             <input
               type="email"
-              placeholder="email@vng.com.vn"
+              placeholder="email@example.com"
               value={newEmail}
               onChange={e => setNewEmail(e.target.value)}
               onKeyDown={e => e.key === "Enter" && addUser()}
