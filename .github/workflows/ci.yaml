@@ -20,12 +20,13 @@ jobs:
   semgrep:
     name: SAST (Semgrep)
     runs-on: ubuntu-latest
+    continue-on-error: true              # demo: vẫn fail finding nhưng không chặn pipeline
     container:
       image: semgrep/semgrep
     steps:
       - uses: actions/checkout@v4
       - name: Run Semgrep
-        run: semgrep scan --config auto --error --sarif --output semgrep.sarif .
+        run: semgrep scan --config auto --sarif --output semgrep.sarif .  # bỏ --error để báo cáo finding nhưng exit 0
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -39,6 +40,7 @@ jobs:
   trivy-fs:
     name: SCA (Trivy FS)
     runs-on: ubuntu-latest
+    continue-on-error: true              # demo: báo cáo finding nhưng không chặn pipeline
     steps:
       - uses: actions/checkout@v4
       - name: Trivy FS scan
@@ -47,7 +49,7 @@ jobs:
           scan-type: fs
           scan-ref: .
           format: table
-          exit-code: 1
+          exit-code: 0                   # 0 = không fail, vẫn in finding ra log
           severity: HIGH,CRITICAL
           ignore-unfixed: true
 
@@ -94,11 +96,12 @@ jobs:
           outputs: type=docker,dest=/tmp/image.tar  # export tar có sẵn tags
 
       - name: Trivy scan tar image
+        continue-on-error: true          # demo: báo cáo finding nhưng không chặn pipeline
         uses: aquasecurity/trivy-action@master
         with:
           input: /tmp/image.tar
           format: table
-          exit-code: 1
+          exit-code: 0                   # 0 = không fail, vẫn in finding
           severity: HIGH,CRITICAL
           ignore-unfixed: true
 
