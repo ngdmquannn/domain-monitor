@@ -10,17 +10,23 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.svg" },
 };
 
+const oidcOn = process.env.NEXT_PUBLIC_OIDC_ENABLED === "true";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const tree = (
+    <>
+      <Sidebar />
+      <div className="main-content" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        {children}
+      </div>
+    </>
+  );
+
   return (
     <html lang="en">
       <body className="antialiased" style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}>
         <ThemeProvider>
-          <SessionProvider>
-            <Sidebar />
-            <div className="main-content" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-              {children}
-            </div>
-          </SessionProvider>
+          {oidcOn ? <SessionProvider>{tree}</SessionProvider> : tree}
         </ThemeProvider>
       </body>
     </html>
