@@ -60,6 +60,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [semgrep, trivy-fs]
     if: github.event_name == 'push'
+    permissions:
+      contents: read
+      actions: write                  # cache: type=gha cần quyền này
     outputs:
       image_tag: ${{ steps.meta.outputs.version }}
       image_ref: ${{ env.IMAGE }}:${{ steps.meta.outputs.version }}
@@ -77,35 +80,34 @@ jobs:
             type=sha,prefix=,format=short
             type=ref,event=branch
 
-      - name: Build local (load to docker daemon, no push)
+      - name: Build to tar (no push, no daemon load)
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile
           platforms: linux/amd64
-          load: true                     # load into local daemon
-          push: false                    # KHÔNG push
+          push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          outputs: type=docker,dest=/tmp/image.tar
+          outputs: type=docker,dest=/tmp/image.tar  # export tar có sẵn tags
 
-      - name: Trivy scan local image
+      - name: Trivy scan tar image
         uses: aquasecurity/trivy-action@master
         with:
-          input: /tmp/image.tar          # scan tar file trực tiếp, không cần load
+          input: /tmp/image.tar
           format: table
-          exit-code: 1                   # fail nếu có HIGH/CRITICAL
+          exit-code: 1
           severity: HIGH,CRITICAL
           ignore-unfixed: true
 
-      - name: Upload image artifact for push job
+      - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
           name: image-${{ github.run_id }}
           path: /tmp/image.tar
-          retention-days: 1              # ngắn vì sau push không cần nữa
+          retention-days: 1
 
   # ─────────────────────────────────────────────
   # Push image — chỉ chạy khi build-scan pass
@@ -114,6 +116,7 @@ jobs:
     name: Push Image
     runs-on: ubuntu-latest
     needs: build-scan
+    if: github.event_name == 'push'
     permissions:
       contents: read
       packages: write
@@ -155,6 +158,7 @@ jobs:
     name: Sign (Cosign)
     runs-on: ubuntu-latest
     needs: push
+    if: github.event_name == 'push'
     environment: production-sign         # pause chờ approve
     permissions:
       contents: read
