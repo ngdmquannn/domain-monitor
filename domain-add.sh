@@ -2,8 +2,8 @@
 # domain-add.sh — Add domains to the Domain Monitor via API or .env
 #
 # Usage:
-#   ./domain-add.sh -e domains.txt -u https://domain-monitor.zingplay.dev
-#   ./domain-add.sh example.com foo.net -u https://domain-monitor.zingplay.dev
+#   ./domain-add.sh -e domains.txt -u https://domain-monitor.example.com
+#   ./domain-add.sh example.com foo.net -u https://domain-monitor.example.com
 #   ./domain-add.sh -e domains.txt          # update .env directly (local dev)
 #   ./domain-add.sh example.com            # update .env directly (local dev)
 
@@ -23,8 +23,8 @@ Options:
   -h, --help         Hiện usage
 
 Examples:
-  ./domain-add.sh -e domains.txt -u https://domain-monitor.zingplay.dev
-  ./domain-add.sh example.com newsite.vn -u https://domain-monitor.zingplay.dev
+  ./domain-add.sh -e domains.txt -u https://domain-monitor.example.com
+  ./domain-add.sh example.com newsite.vn -u https://domain-monitor.example.com
   ./domain-add.sh -e domains.txt
 EOF
   exit 1
