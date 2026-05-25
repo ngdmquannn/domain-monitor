@@ -72,7 +72,7 @@ export default function SearchPage() {
             background: "linear-gradient(135deg, #E8341A 0%, #F5A623 100%)",
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
           }}>
-            Domain Monitor — ZPS
+            Domain Monitor
           </h1>
           <p className="text-xs mt-0.5" style={{ color: "var(--ink-3)" }}>
             Nhập tên domain bất kỳ để kiểm tra trạng thái
@@ -98,7 +98,7 @@ export default function SearchPage() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="ví dụ: zing.vn, google.com..."
+                placeholder="ví dụ: example.com, google.com..."
                 className="w-full pl-9 pr-4 py-2.5 rounded-lg text-sm outline-none transition-all"
                 style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--ink-1)" }}
                 onFocus={e => {
