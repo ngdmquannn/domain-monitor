@@ -30,6 +30,12 @@ jobs:
           semgrep scan \
             --config p/owasp-top-ten \
             --config p/security-audit \
+            --config p/cwe-top-25 \
+            --config p/secrets \
+            --config p/typescript \
+            --config p/javascript \
+            --config p/nextjs \
+            --config p/dockerfile \
             --config auto \
             --sarif --output semgrep.sarif .
       - uses: actions/upload-artifact@v4
