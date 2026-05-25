@@ -79,8 +79,12 @@ jobs:
         with:
           images: ${{ env.IMAGE }}
           tags: |
-            type=sha,prefix=,format=short
+            # Tag chính: <branch>-<sha-short>  vd: main-f21f87f (immutable)
+            type=sha,prefix=${{ github.ref_name }}-,format=short
+            # Tag rolling: <branch>            vd: main (luôn trỏ commit mới nhất)
             type=ref,event=branch
+          flavor: |
+            latest=false
 
       - name: Build to tar (no push, no daemon load)
         uses: docker/build-push-action@v5
