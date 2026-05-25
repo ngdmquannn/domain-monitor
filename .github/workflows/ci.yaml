@@ -165,7 +165,8 @@ jobs:
     name: Sign (Cosign)
     runs-on: ubuntu-latest
     needs: push
-    if: github.event_name == 'push'
+    # Chỉ sign khi push lên prod — main/dev skip cosign step
+    if: github.event_name == 'push' && github.ref_name == 'prod'
     environment: production-approve      # pause chờ approve
     permissions:
       contents: read
