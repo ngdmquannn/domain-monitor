@@ -15,18 +15,23 @@ env:
 
 jobs:
   # ─────────────────────────────────────────────
-  # SAST — Semgrep
+  # SAST — Semgrep (OWASP Top 10 + Security Audit)
   # ─────────────────────────────────────────────
   semgrep:
     name: SAST (Semgrep)
     runs-on: ubuntu-latest
-    continue-on-error: true              # demo: vẫn fail finding nhưng không chặn pipeline
+    continue-on-error: true              # demo: log finding nhưng không chặn pipeline
     container:
       image: semgrep/semgrep
     steps:
       - uses: actions/checkout@v4
       - name: Run Semgrep
-        run: semgrep scan --config auto --sarif --output semgrep.sarif .  # bỏ --error để báo cáo finding nhưng exit 0
+        run: |
+          semgrep scan \
+            --config p/owasp-top-ten \
+            --config p/security-audit \
+            --config auto \
+            --sarif --output semgrep.sarif .
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -35,19 +40,20 @@ jobs:
           retention-days: 14
 
   # ─────────────────────────────────────────────
-  # SCA — Trivy filesystem (dependencies)
+  # SCA — Trivy filesystem (vuln + secret + misconfig)
   # ─────────────────────────────────────────────
   trivy-fs:
     name: SCA (Trivy FS)
     runs-on: ubuntu-latest
-    continue-on-error: true              # demo: báo cáo finding nhưng không chặn pipeline
+    continue-on-error: true              # demo: log finding nhưng không chặn pipeline
     steps:
       - uses: actions/checkout@v4
-      - name: Trivy FS scan
+      - name: Trivy FS scan (vuln + secret + misconfig)
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
           scan-ref: .
+          scanners: vuln,secret,misconfig
           format: table
           exit-code: 0                   # 0 = không fail, vẫn in finding ra log
           severity: HIGH,CRITICAL
